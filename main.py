@@ -2,7 +2,9 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 import warnings
-from flask import Flask, render_template, request
+from flask import Flask, request
+from sklearn.metrics import classification_report
+from sklearn.svm import SVC
 warnings.filterwarnings('ignore')
 jobs1=pd.read_csv("./input/dataset/jobz.csv")
 jobs2=pd.read_csv("./input/dataset/Modified.csv")
@@ -18,9 +20,6 @@ classes = df['jobtitle'].value_counts()[:200]
 keys = classes.keys().to_list()
 
 df =df[df['jobtitle'].isin(keys)]
-df['jobtitle'].value_counts()
-
-
 def chane_titles(x):
     x = x.strip()
     if x == 'Senior Java Developer':
@@ -57,9 +56,6 @@ def chane_titles(x):
 
 
 df['jobtitle'] = df['jobtitle'].apply(chane_titles)
-df['jobtitle'].value_counts()
-qty=df['jobtitle'].value_counts()[:5].tolist()
-label=df['jobtitle'].value_counts().index.tolist()
 
 stopwordsSkills=[]
 sk=df["skills"]
@@ -70,8 +66,6 @@ for word in sk:
     if(word[0]!=''):
         stopwordsSkills.append(word[0])
 sdf=pd.DataFrame({'skills':stopwordsSkills})
-qtySkills=sdf["skills"].value_counts().tolist()
-labelSkills=sdf['skills'].value_counts().index.tolist()
 vectorizer=TfidfVectorizer()
 X=vectorizer.fit_transform(df['jobtitle'].values)
 analyze=vectorizer.build_analyzer()
@@ -84,13 +78,10 @@ Xclass=vectorizer.fit_transform(jobSkills)
 X_train,X_test,Y_train,Y_test=train_test_split(Xclass,df['jobtitle'],test_size=0.2,random_state=42)
 #predictions
 
-from sklearn.metrics import classification_report
-from sklearn.svm import SVC
-
 svm=SVC(C=50,gamma=1,kernel='rbf',probability=True)
 svmfit=svm.fit(X_train,Y_train)
 svm_predictions=svmfit.predict(X_test)
-classification_report(Y_test,svm_predictions)
+
 
 def getJob(sk):
     skills=''
