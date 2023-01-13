@@ -71,20 +71,19 @@ X=vectorizer.fit_transform(df['jobtitle'].values)
 analyze=vectorizer.build_analyzer()
 
 #training the model
-def train():
-    global svm
-    jobSkills=[]
-    for i in sdf["skills"]:
-        jobSkills.append(i.lower())
-    Xclass=vectorizer.fit_transform(jobSkills)
-    X_train,X_test,Y_train,Y_test=train_test_split(Xclass,df['jobtitle'],test_size=0.2,random_state=42)
-    #predictions
 
+
+jobSkills=[]
+for i in sdf["skills"]:
+    jobSkills.append(i.lower())
+Xclass=vectorizer.fit_transform(jobSkills)
+X_train,X_test,Y_train,Y_test=train_test_split(Xclass,df['jobtitle'],test_size=0.2,random_state=42)
+#predictions
+
+def getJob(sk):
     svm=SVC(C=50,gamma=1,kernel='rbf',probability=True)
     svmfit=svm.fit(X_train,Y_train)
     svm_predictions=svmfit.predict(X_test)
-def getJob(sk):
-    train()
     skills=''
     for i in sk:
         i=i.lower()
