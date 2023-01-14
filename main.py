@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 import warnings
-from flask import Flask, request
+from flask import Flask, request,jsonify
 from sklearn.metrics import classification_report
 from sklearn.svm import SVC
 warnings.filterwarnings('ignore')
@@ -101,4 +101,6 @@ def home():
 #return the getJob function in jason with skills given in body
 @app.route('/getJob', methods=['POST'])
 def getJobb():
-    return getJob(request.get_json()["skills"])
+    data = getJob(request.get_json()["skills"])
+    response = jsonify(job=data)
+    return response
